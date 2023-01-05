@@ -1,18 +1,30 @@
-import { Form, ActionPanel, Action, showToast } from "@raycast/api";
+import { Form, ActionPanel, Action, showToast, Clipboard } from "@raycast/api";
 
 type Values = {
-  textfield: string;
-  textarea: string;
-  datepicker: Date;
-  checkbox: boolean;
-  dropdown: string;
-  tokeneditor: string[];
+  branch_name: string;
+  type_of_branch: string;
 };
 
 export default function Command() {
   function handleSubmit(values: Values) {
     console.log(values);
-    showToast({ title: "Submitted form", message: "See logs for submitted values" });
+
+    const branchType = values.type_of_branch ? `${values.type_of_branch}/` : "";
+    const branchNameAsSlug = values.branch_name
+      ? values.branch_name
+          .toLowerCase()
+          // replace all but 0-9, a-z and / with a dash
+          .replace(/[^0-9a-z/]/g, "-")
+          // replace multiple dashes with a single dash
+          .replace(/[-]+/g, "-")
+          // trim dashes from the beginning
+          .replace(/^-+/, "")
+          // trim dashes from the end
+          .replace(/-+$/, "")
+      : "";
+    const fullBranchName = `${branchType}${branchNameAsSlug}`;
+    Clipboard.copy(fullBranchName);
+    showToast({ title: "Copied to clipboard", message: `${fullBranchName}` });
   }
 
   return (
@@ -23,18 +35,13 @@ export default function Command() {
         </ActionPanel>
       }
     >
-      <Form.Description text="This form showcases all available form elements." />
-      <Form.TextField id="textfield" title="Text field" placeholder="Enter text" defaultValue="Raycast" />
-      <Form.TextArea id="textarea" title="Text area" placeholder="Enter multi-line text" />
-      <Form.Separator />
-      <Form.DatePicker id="datepicker" title="Date picker" />
-      <Form.Checkbox id="checkbox" title="Checkbox" label="Checkbox Label" storeValue />
-      <Form.Dropdown id="dropdown" title="Dropdown">
-        <Form.Dropdown.Item value="dropdown-item" title="Dropdown Item" />
+      <Form.Dropdown id="type_of_branch" title="Type of branch">
+        <Form.Dropdown.Item value="" title="" />
+        <Form.Dropdown.Item value="bug" title="Bug" />
+        <Form.Dropdown.Item value="chore" title="Chore" />
+        <Form.Dropdown.Item value="feature" title="Feature" />
       </Form.Dropdown>
-      <Form.TagPicker id="tokeneditor" title="Tag picker">
-        <Form.TagPicker.Item value="tagpicker-item" title="Tag Picker Item" />
-      </Form.TagPicker>
+      <Form.TextField id="branch_name" title="Branch name" placeholder="Change the photo" defaultValue="" />
     </Form>
   );
 }
