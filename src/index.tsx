@@ -7,8 +7,6 @@ type Values = {
 
 export default function Command() {
   function handleSubmit(values: Values) {
-    console.log(values);
-
     const branchType = values.type_of_branch ? `${values.type_of_branch}/` : "";
     const branchNameAsSlug = values.branch_name
       ? values.branch_name
