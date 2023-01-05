@@ -19,6 +19,8 @@ export default function Command() {
           .replace(/^-+/, "")
           // trim dashes from the end
           .replace(/-+$/, "")
+          // only take the first 100 characters
+          .substring(0, 100)
       : "";
     const fullBranchName = `${branchType}${branchNameAsSlug}`;
     Clipboard.copy(fullBranchName);
